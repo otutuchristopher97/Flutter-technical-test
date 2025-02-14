@@ -3,6 +3,7 @@ import 'package:flutter_tech_task/core/common/widget/customer_text.dart';
 import 'package:flutter_tech_task/core/resources/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tech_task/core/resources/media_res.dart';
+import 'package:flutter_tech_task/core/routing/router.dart';
 import 'package:flutter_tech_task/src/post/presentation/cubit/offline_post/offline_post_cubit.dart';
 import 'package:flutter_tech_task/src/post/presentation/cubit/post/post_cubit.dart';
 import 'package:flutter_tech_task/src/post/presentation/view/widget/post_widget.dart';
@@ -120,120 +121,128 @@ class _PostScreenState extends State<PostScreen> {
             ],
           ),
           const SizedBox(height: 10),
-          if(dataType == 'online')
-          BlocBuilder<PostCubit, PostState>(
-            builder: (context, state) {
-              if (state is LoadingPost) {
-                return Expanded(
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(MediaRes.loading, height: 40, width: 50),
-                        const SizedBox(height: 5),
-                        const CustomText(text: 'Processing', fontSize: 14),
-                      ],
-                    ),
-                  ),
-                );
-              }
-              if (state is LoadedPosts) {
-                if (state.posts.isEmpty) {
+          if (dataType == 'online')
+            BlocBuilder<PostCubit, PostState>(
+              builder: (context, state) {
+                if (state is LoadingPost) {
                   return Expanded(
                     child: Center(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            MediaRes.emptylogo,
-                            height: 100,
-                            width: 100,
-                          ),
-                          const SizedBox(height: 10),
-                          const CustomText(text: 'No Post Yet', fontSize: 14),
+                          Image.asset(MediaRes.loading, height: 40, width: 50),
+                          const SizedBox(height: 5),
+                          const CustomText(text: 'Processing', fontSize: 14),
                         ],
                       ),
                     ),
                   );
                 }
-                return Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: state.posts.length,
-                    itemBuilder: (context, index) {
-                      return PostWidget(post: state.posts[index]);
-                    },
-                    padding: const EdgeInsets.all(10),
-                  ),
-                );
-              }
-              return Center(
-                child: SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: Lottie.asset(MediaRes.pageUnderConstruction),
-                ),
-              );
-            },
-          ),
-          if(dataType == 'offline')
-          BlocBuilder<OfflinePostCubit, OfflinePostState>(
-            builder: (context, state) {
-              if (state is LoadingPost) {
-                return Expanded(
-                  child: Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(MediaRes.loading, height: 40, width: 50),
-                        const SizedBox(height: 5),
-                        const CustomText(text: 'Processing', fontSize: 14),
-                      ],
+                if (state is LoadedPosts) {
+                  if (state.posts.isEmpty) {
+                    return Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              MediaRes.emptylogo,
+                              height: 100,
+                              width: 100,
+                            ),
+                            const SizedBox(height: 10),
+                            const CustomText(text: 'No Post Yet', fontSize: 14),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: state.posts.length,
+                      itemBuilder: (context, index) {
+                        return PostWidget(
+                          post: state.posts[index],
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                              RouteConstants.postdetailscreen,
+                              arguments: {'id': state.posts[index].id},
+                            );
+                          },
+                        );
+                      },
+                      padding: const EdgeInsets.all(10),
                     ),
+                  );
+                }
+                return Center(
+                  child: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: Lottie.asset(MediaRes.pageUnderConstruction),
                   ),
                 );
-              }
-              if (state is LoadedOfflinePosts) {
-                if (state.posts.isEmpty) {
+              },
+            ),
+          if (dataType == 'offline')
+            BlocBuilder<OfflinePostCubit, OfflinePostState>(
+              builder: (context, state) {
+                if (state is LoadingPost) {
                   return Expanded(
                     child: Center(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            MediaRes.emptylogo,
-                            height: 100,
-                            width: 100,
-                          ),
-                          const SizedBox(height: 10),
-                          const CustomText(text: 'No Post Yet', fontSize: 14),
+                          Image.asset(MediaRes.loading, height: 40, width: 50),
+                          const SizedBox(height: 5),
+                          const CustomText(text: 'Processing', fontSize: 14),
                         ],
                       ),
                     ),
                   );
                 }
-                return Expanded(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: state.posts.length,
-                    itemBuilder: (context, index) {
-                      return PostWidget(post: state.posts[index]);
-                    },
-                    padding: const EdgeInsets.all(10),
+                if (state is LoadedOfflinePosts) {
+                  if (state.posts.isEmpty) {
+                    return Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              MediaRes.emptylogo,
+                              height: 100,
+                              width: 100,
+                            ),
+                            const SizedBox(height: 10),
+                            const CustomText(text: 'No Post Yet', fontSize: 14),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  return Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: state.posts.length,
+                      itemBuilder: (context, index) {
+                        return PostWidget(post: state.posts[index]);
+                      },
+                      padding: const EdgeInsets.all(10),
+                    ),
+                  );
+                }
+                return Center(
+                  child: SizedBox(
+                    width: 300,
+                    height: 300,
+                    child: Lottie.asset(MediaRes.pageUnderConstruction),
                   ),
                 );
-              }
-              return Center(
-                child: SizedBox(
-                  width: 300,
-                  height: 300,
-                  child: Lottie.asset(MediaRes.pageUnderConstruction),
-                ),
-              );
-            },
-          ),
+              },
+            ),
         ],
       ),
     );
